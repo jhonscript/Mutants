@@ -1,0 +1,145 @@
+<html>
+	<head>
+		<script>
+			var myRe = /([ATCG])\1{3}/;
+		
+			function validationTransposeVerticalToHorizontalDNA(array) {
+				var itemLarge = array.reduce((acc, item) =>
+					acc.length < item.length ? item : acc
+				);
+							
+				var responseValidation = Object.keys(itemLarge).some((indexColumn) => {
+						return myRe.test(
+								array.map((rowArray) => 
+									rowArray[indexColumn] == undefined ? '' : rowArray[indexColumn]
+								).join('')
+							);
+				});
+				
+				return responseValidation;
+			}
+			
+			function ValidationTransposeObliqueToHorizontalDNA(array) {
+				var defaultResponse = false;
+			
+				var itemLarge = array.reduce((acc, item) =>
+					acc.length < item.length ? item : acc
+				);
+				
+				var maxColums = itemLarge.length;
+				var maxRows = array.length;			
+				
+				var itemArrayAsc = [];
+				var itemArrayDesc = [];
+				
+				for(var i = 0; i < maxColums; i++)
+				{					
+					for(var j = 0; j < maxRows; j++)
+					{
+						if(i+j >= maxColums && i+j >= maxRows)
+							break;
+							
+						if(itemArrayAsc != undefined) itemArrayAsc.push(array[j][i+j]);
+						if(itemArrayDesc != undefined) itemArrayDesc.push(array[i+j][j]);						
+					}
+					
+					if(!ValidateItemArray(itemArrayAsc))
+						itemArrayAsc = undefined;
+					else
+					{							
+						var responseValidation = ValidateItem(itemArrayAsc)
+						if(responseValidation)
+							return responseValidation;				
+					}
+					
+					if(!ValidateItemArray(itemArrayDesc))						
+						itemArrayDesc = undefined;
+					else
+					{		
+						var responseValidation = ValidateItem(itemArrayDesc)
+						if(responseValidation)
+							return responseValidation;						
+					}
+						
+					if(itemArrayAsc == undefined && itemArrayDesc == undefined)
+					{
+						return defaultResponse;
+					}
+				}
+				
+				return defaultResponse;
+			}
+			
+			function ValidateItemArray(itemArray)
+			{
+				var minLengthSecuence = 4;
+				
+				if(itemArray == undefined)
+					return false;
+				else if (itemArray.length < minLengthSecuence)
+					return false;
+				else
+					return true;					
+			}
+			
+			function ValidateItem(itemArray)
+			{
+				var defaultResponse = false;			
+				
+				item = itemArray.join('');
+							
+				var responseValidation = myRe.test(item);					
+				if(responseValidation)
+					return responseValidation;
+				
+				return defaultResponse;
+			}
+			
+			function ValidationOriginalDNA (dnaArray) {
+				var responseValidation = dnaArray.some((value)=> 
+							 myRe.test(value)
+							);
+							
+				return responseValidation;
+			}
+		</script>
+		<script>
+			var obj =
+			{
+				//'dna':["ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"]
+				//'dna':["ATGCGA","CAGTGC","TTATGT","AGAAGG","TCCCTA","TCACTG"]
+				'dna':["ATGCGA","CAGTGC","TTATGT","AGAAAG","TCCCTA","TCACTG"]
+			}
+			
+			dnaArrayOrginal = obj.dna;	
+					
+			responseValidation = ValidationOriginalDNA(dnaArrayOrginal);
+						
+			if(responseValidation)
+				console.log("Mutant Horizontal");
+			else
+			{
+				responseValidation = validationTransposeVerticalToHorizontalDNA(dnaArrayOrginal);
+				
+				if(responseValidation)
+					console.log("Mutant Vertical");
+				else
+				{
+					responseValidation = ValidationTransposeObliqueToHorizontalDNA(dnaArrayOrginal);
+				
+					if(responseValidation)
+						console.log("Mutant Oblique");
+					else
+					{
+						dnaArrayReverse = dnaArrayOrginal.slice(0).reverse();
+						responseValidation = ValidationTransposeObliqueToHorizontalDNA(dnaArrayReverse);
+						if(responseValidation)
+							console.log("Mutant Oblique Reverse");
+						else
+							console.log("Human");
+					}
+				}
+			}			
+		</script>
+	</head>
+</html>
