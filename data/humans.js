@@ -5,7 +5,7 @@ module.exports = function(mongoose)
 	var data = {
 		CountHumans: async function(isMutant)
 		{
-			var count = await Human.count({ isMutant: isMutant }, function (err, count) {
+			var count = await Human.countDocuments({ isMutant: isMutant }, function (err, count) {
 				if(err) 
 					console.log('ERROR: ' + err);
 			}).exec();
