@@ -3,12 +3,20 @@ module.exports = function(mongoose)
 	var Human = require('../models/human.js')(mongoose);
 	
 	var data = {
-		Find: async function(dna) {
-			var human = await Human.findOne({dna: dna.toString()}, function(err) {
-				if(!err) {
-				} else {
+		CountHumans: async function(isMutant)
+		{
+			var count = await Human.count({ isMutant: isMutant }, function (err, count) {
+				if(err) 
 					console.log('ERROR: ' + err);
-				}
+			}).exec();
+			
+			return count;
+		},
+		Find: async function(dna) 
+		{
+			var human = await Human.findOne({dna: dna.toString().toUpperCase()}, function(err) {
+				if(err) 
+					console.log('ERROR: ' + err);				
 			}).exec();
 			
 			return human;
@@ -16,15 +24,13 @@ module.exports = function(mongoose)
 		Save: async function(dna, isMutant)
 		{			
 			var human = new Human({
-				dna:  dna.toString(),
+				dna:  dna.toString().toUpperCase(),
 				isMutant: isMutant
 			});			
 			
 			var promise = human.save(function(err) {
-				if(!err) {
-				} else {
-					console.log('ERROR: ' + err);
-				}
+				if(err)
+					console.log('ERROR: ' + err);				
 			});
 			
 			return promise;

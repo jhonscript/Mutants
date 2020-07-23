@@ -4,10 +4,10 @@ module.exports = function(worker, mongoose) {
 	var MutantService = require('../services/mutants.js')(mongoose);
 
 	//GET - Return all Mutants in the DB
-	var stats = function(req, res) {
-		console.log('GET');
+	var stats = async function(req, res) {
+		var stats = await MutantService.Stats();
 		
-		res.send(Mutant);
+		res.send(stats);
 	};
 
 	//POST - Validate a new Mutant in the DB
@@ -15,15 +15,22 @@ module.exports = function(worker, mongoose) {
 		var dna = req.body.dna;
 		
 		if(dna == undefined)
-			throw new Error("The structure of the parameters is not valid, example { dna:[string, string, ...]  }");
+			throw new Error("The structure of the parameters is not valid, example { dna: [string, string, ...]  }");
 		
 		let promiseIsMutant = MutantService.IsMutant(dna);
 		
 		promiseIsMutant.then(function (isMutant) {
-			res.send(isMutant);
+			if(isMutant)
+				res.send();
+			else
+			{
+				res.status(403);
+				res.send();
+			}			
 		});
 	};
 
 	//Link routes and functions
-	worker.server.post('/Mutant', mutant);	
+	worker.server.post('/Mutant', mutant);
+	worker.server.get('/Stats', stats);
 }

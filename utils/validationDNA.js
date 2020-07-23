@@ -78,7 +78,6 @@ module.exports = {
 		return promise;
 	},
 	
-	
 	ValidationOriginalDNA: async function (dnaArray) {
 		var promise = new Promise((resolve, reject) => {
 			var responseValidation = dnaArray.some((value)=> 
@@ -135,5 +134,5 @@ module.exports = {
 		];
 		
 		return promises;
-	}	
+	}
 }

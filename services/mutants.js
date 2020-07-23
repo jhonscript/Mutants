@@ -4,6 +4,18 @@ module.exports = function(mongoose)
 	var HumanData = require('../data/humans.js')(mongoose);
 	
 	var service = {
+		Stats: async function() 
+		{
+			var countMutants = await HumanData.CountHumans(true);
+			var countNoMutants = await HumanData.CountHumans(false);
+			
+			var ratio = 0;
+			if(countNoMutants != 0)			 
+				ratio = countMutants / countNoMutants;
+			
+			var stats = { count_mutant_dna: countMutants, count_human_dna: countNoMutants, ratio: ratio };
+			return stats;
+		},
 		IsMutant: async function(dna)
 		{
 			let promiseValidateMutant = new Promise((resolve, reject) => { 
@@ -40,8 +52,7 @@ module.exports = function(mongoose)
 			var human = await HumanData.Find(dna);
 						
 			if(human == undefined)					
-				var promiseSave = HumanData.Save(dna, isMutant);
-			return 1;
+				var promiseSave = HumanData.Save(dna, isMutant);			
 		}
 	}
 
